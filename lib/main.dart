@@ -1,72 +1,69 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
+import './questioning.dart';
+import './answer.dart';
 
-void main() => runApp(const AnimatedContainerApp());
+void main() => runApp(MyApp());
 
-class AnimatedContainerApp extends StatefulWidget {
-  const AnimatedContainerApp({Key? key}) : super(key: key);
-
+class MyApp extends StatefulWidget {
   @override
-  _AnimatedContainerAppState createState() => _AnimatedContainerAppState();
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return MyAppState();
+  }
 }
 
-class _AnimatedContainerAppState extends State<AnimatedContainerApp> {
-  // Define the various properties with default values. Update these properties
-  // when the user taps a FloatingActionButton.
-  double _width = 50;
-  double _height = 50;
-  Color _color = Colors.green;
-  BorderRadiusGeometry _borderRadius = BorderRadius.circular(8);
+class MyAppState extends State<MyApp> {
+  var _questionIndex = 0;
+
+  void goBack() {
+    setState(() {
+      _questionIndex--;
+      print(_questionIndex);
+    });
+  }
+
+  void _answerQuestion() {
+    setState(() {
+      _questionIndex++;
+      print(_questionIndex);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    var questions = [
+      {
+        'questionText': 'What\'s your favorite color?',
+        'answer1': ['black', 'white', 'orange'],
+      },
+      {
+        'questionText': 'What\'s your favorite animal?',
+        'answer1': ['dog', 'lion', 'tiger']
+      },
+    ];
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('AnimatedContainer'),
+          title: Text('My First App'),
         ),
-        body: Center(
-          child: AnimatedContainer(
-            // Use the properties stored in the State class.
-            width: _width,
-            height: _height,
-            decoration: BoxDecoration(
-              color: _color,
-              borderRadius: _borderRadius,
+        body: Column(
+          children: [
+            question(
+              questions[_questionIndex]['questionText'] as String,
             ),
-            // Define how long the animation should take.
-            duration: const Duration(seconds: 1),
-            // Provide an optional curve to make the animation feel smoother.
-            curve: Curves.fastOutSlowIn,
-          ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          // When the user taps the button
-          onPressed: () {
-            // Use setState to rebuild the widget with new values.
-            setState(() {
-              // Create a random number generator.
-              final random = Random();
-
-              // Generate a random width and height.
-              _width = random.nextInt(300).toDouble();
-              _height = random.nextInt(300).toDouble();
-
-              // Generate a random color.
-              _color = Color.fromRGBO(
-                random.nextInt(256),
-                random.nextInt(256),
-                random.nextInt(256),
-                1,
-              );
-
-              // Generate a random border radius.
-              _borderRadius =
-                  BorderRadius.circular(random.nextInt(100).toDouble());
-            });
-          },
-          child: const Icon(Icons.play_arrow),
+            ...(questions[_questionIndex]['answer1'] as List<String>)
+                .map((answer) {
+              return Answer(_answerQuestion, answer);
+            }).toList(),
+            RaisedButton(
+                textColor: Colors.red,
+                elevation: 5,
+                padding: EdgeInsets.all(10),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(16.0))),
+                child: Text('<-'),
+                onPressed: goBack),
+          ],
         ),
       ),
     );
